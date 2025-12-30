@@ -15,7 +15,13 @@ dbConnect();
 
 app.post('/api/messages', async (req, res) => {
   try {
-    const { name, email, phone, message } = req.body;
+    const { name, email, phone, message, botfield } = req.body;
+
+    // Honeypot anti-spam check
+    if (botfield) {
+      console.log('Spam detected via honeypot');
+      return res.status(400).json({ error: 'Spam detected' });
+    }
 
     if (!name || !email || !phone || !message) {
       return res.status(400).json({ error: 'Всі поля обов\'язкові' });
@@ -30,7 +36,7 @@ app.post('/api/messages', async (req, res) => {
 
     res.status(201).json({ success: true });
   } catch (error) {
-    console.error(error);
+    console.error(error); 
     res.status(500).json({ error: 'Сталася помилка на сервері' });
   }
 });
